@@ -10,10 +10,13 @@ import { cartService } from '../lib/cart';
 import { useState, useEffect } from 'react';
 
 const Navbar = () => {
+  type User = { id?: string; name: string; email?: string };
   const pathname = usePathname();
   const router = useRouter();
-  const [cartCount, setCartCount] = useState(0);
-  const [user, setUser] = useState<any>(() => authService.getCurrentUser());
+  const [cartCount, setCartCount] = useState<number>(0);
+  const [user, setUser] = useState<User | null>(() => authService.getCurrentUser() ?? null);
+
+  // Initialize current user from authService; no synchronous setState in an effect.
 
   useEffect(() => {
     // Update cart count

@@ -1,207 +1,282 @@
-import * as React from "react";
-import * as MenubarPrimitive from "@radix-ui/react-menubar";
-import { Check, ChevronRight, Circle } from "lucide-react";
+'use client';
 
-import { cn } from "@/lib/utils";
+import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import { cva } from 'class-variance-authority';
+import { ChevronDown } from 'lucide-react';
+import { cn } from '../../lib/utils';
 
-const MenubarMenu = MenubarPrimitive.Menu;
+// Types
+interface NavigationMenuProps {
+  className?: string;
+  children: React.ReactNode;
+}
 
-const MenubarGroup = MenubarPrimitive.Group;
+interface NavigationMenuListProps {
+  className?: string;
+  children: React.ReactNode;
+}
 
-const MenubarPortal = MenubarPrimitive.Portal;
+interface NavigationMenuItemProps {
+  className?: string;
+  children: React.ReactNode;
+}
 
-const MenubarSub = MenubarPrimitive.Sub;
+interface NavigationMenuTriggerProps {
+  className?: string;
+  children: React.ReactNode;
+}
 
-const MenubarRadioGroup = MenubarPrimitive.RadioGroup;
+interface NavigationMenuContentProps {
+  className?: string;
+  children: React.ReactNode;
+}
 
-const Menubar = React.forwardRef<
-  React.ElementRef<typeof MenubarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <MenubarPrimitive.Root
-    ref={ref}
-    className={cn("flex h-10 items-center space-x-1 rounded-md border bg-background p-1", className)}
-    {...props}
-  />
-));
-Menubar.displayName = MenubarPrimitive.Root.displayName;
+interface NavigationMenuLinkProps {
+  href: string;
+  className?: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+}
 
-const MenubarTrigger = React.forwardRef<
-  React.ElementRef<typeof MenubarPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Trigger>
->(({ className, ...props }, ref) => (
-  <MenubarPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "flex cursor-default select-none items-center rounded-sm px-3 py-1.5 text-sm font-medium outline-none data-[state=open]:bg-accent data-[state=open]:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-      className,
-    )}
-    {...props}
-  />
-));
-MenubarTrigger.displayName = MenubarPrimitive.Trigger.displayName;
+// Style variants
+const navigationMenuTriggerStyle = cva(
+  'group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50'
+);
 
-const MenubarSubTrigger = React.forwardRef<
-  React.ElementRef<typeof MenubarPrimitive.SubTrigger>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.SubTrigger> & {
-    inset?: boolean;
-  }
->(({ className, inset, children, ...props }, ref) => (
-  <MenubarPrimitive.SubTrigger
-    ref={ref}
-    className={cn(
-      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[state=open]:bg-accent data-[state=open]:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-      inset && "pl-8",
-      className,
-    )}
-    {...props}
-  >
-    {children}
-    <ChevronRight className="ml-auto h-4 w-4" />
-  </MenubarPrimitive.SubTrigger>
-));
-MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName;
+// Navigation Menu Component
+function NavigationMenu({ className, children, ...props }: NavigationMenuProps) {
+  return (
+    <nav
+      className={cn('relative z-10 flex max-w-max flex-1 items-center justify-center', className)}
+      {...props}
+    >
+      {children}
+    </nav>
+  );
+}
 
-const MenubarSubContent = React.forwardRef<
-  React.ElementRef<typeof MenubarPrimitive.SubContent>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.SubContent>
->(({ className, ...props }, ref) => (
-  <MenubarPrimitive.SubContent
-    ref={ref}
-    className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-      className,
-    )}
-    {...props}
-  />
-));
-MenubarSubContent.displayName = MenubarPrimitive.SubContent.displayName;
+// Navigation Menu List Component
+function NavigationMenuList({ className, children, ...props }: NavigationMenuListProps) {
+  return (
+    <ul
+      className={cn('group flex flex-1 list-none items-center justify-center space-x-1', className)}
+      {...props}
+    >
+      {children}
+    </ul>
+  );
+}
 
-const MenubarContent = React.forwardRef<
-  React.ElementRef<typeof MenubarPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Content>
->(({ className, align = "start", alignOffset = -4, sideOffset = 8, ...props }, ref) => (
-  <MenubarPrimitive.Portal>
-    <MenubarPrimitive.Content
-      ref={ref}
-      align={align}
-      alignOffset={alignOffset}
-      sideOffset={sideOffset}
+// Navigation Menu Item Component
+function NavigationMenuItem({ className, children, ...props }: NavigationMenuItemProps) {
+  return (
+    <li className={cn('relative', className)} {...props}>
+      {children}
+    </li>
+  );
+}
+
+// Navigation Menu Trigger Component
+function NavigationMenuTrigger({ className, children, ...props }: NavigationMenuTriggerProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  return (
+    <button
+      ref={triggerRef}
+      className={cn(navigationMenuTriggerStyle(), 'group', className, {
+        'bg-accent/50': isOpen,
+      })}
+      onClick={() => setIsOpen(!isOpen)}
+      {...props}
+    >
+      {children}
+      <ChevronDown
+        className={cn(
+          'relative top-[1px] ml-1 h-3 w-3 transition duration-200',
+          isOpen && 'rotate-180'
+        )}
+        aria-hidden="true"
+      />
+    </button>
+  );
+}
+
+// Navigation Menu Content Component
+function NavigationMenuContent({ className, children, ...props }: NavigationMenuContentProps) {
+  return (
+    <div
       className={cn(
-        "z-50 min-w-[12rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        className,
+        'absolute left-0 top-full mt-1.5 w-full overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-lg animate-in fade-in-0 zoom-in-95',
+        'md:absolute md:w-auto',
+        className
       )}
       {...props}
-    />
-  </MenubarPrimitive.Portal>
-));
-MenubarContent.displayName = MenubarPrimitive.Content.displayName;
+    >
+      {children}
+    </div>
+  );
+}
 
-const MenubarItem = React.forwardRef<
-  React.ElementRef<typeof MenubarPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Item> & {
-    inset?: boolean;
-  }
->(({ className, inset, ...props }, ref) => (
-  <MenubarPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 focus:bg-accent focus:text-accent-foreground",
-      inset && "pl-8",
-      className,
-    )}
-    {...props}
-  />
-));
-MenubarItem.displayName = MenubarPrimitive.Item.displayName;
+// Navigation Menu Link Component
+function NavigationMenuLink({ href, className, children, onClick, ...props }: NavigationMenuLinkProps) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
+        className
+      )}
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+}
 
-const MenubarCheckboxItem = React.forwardRef<
-  React.ElementRef<typeof MenubarPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.CheckboxItem>
->(({ className, children, checked, ...props }, ref) => (
-  <MenubarPrimitive.CheckboxItem
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 focus:bg-accent focus:text-accent-foreground",
-      className,
-    )}
-    checked={checked}
-    {...props}
-  >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      <MenubarPrimitive.ItemIndicator>
-        <Check className="h-4 w-4" />
-      </MenubarPrimitive.ItemIndicator>
-    </span>
-    {children}
-  </MenubarPrimitive.CheckboxItem>
-));
-MenubarCheckboxItem.displayName = MenubarPrimitive.CheckboxItem.displayName;
+// Custom hook for dropdown functionality
+function useDropdown() {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLLIElement | null>(null);
 
-const MenubarRadioItem = React.forwardRef<
-  React.ElementRef<typeof MenubarPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.RadioItem>
->(({ className, children, ...props }, ref) => (
-  <MenubarPrimitive.RadioItem
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 focus:bg-accent focus:text-accent-foreground",
-      className,
-    )}
-    {...props}
-  >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      <MenubarPrimitive.ItemIndicator>
-        <Circle className="h-2 w-2 fill-current" />
-      </MenubarPrimitive.ItemIndicator>
-    </span>
-    {children}
-  </MenubarPrimitive.RadioItem>
-));
-MenubarRadioItem.displayName = MenubarPrimitive.RadioItem.displayName;
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
 
-const MenubarLabel = React.forwardRef<
-  React.ElementRef<typeof MenubarPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Label> & {
-    inset?: boolean;
-  }
->(({ className, inset, ...props }, ref) => (
-  <MenubarPrimitive.Label
-    ref={ref}
-    className={cn("px-2 py-1.5 text-sm font-semibold", inset && "pl-8", className)}
-    {...props}
-  />
-));
-MenubarLabel.displayName = MenubarPrimitive.Label.displayName;
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-const MenubarSeparator = React.forwardRef<
-  React.ElementRef<typeof MenubarPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Separator>
->(({ className, ...props }, ref) => (
-  <MenubarPrimitive.Separator ref={ref} className={cn("-mx-1 my-1 h-px bg-muted", className)} {...props} />
-));
-MenubarSeparator.displayName = MenubarPrimitive.Separator.displayName;
+  return { isOpen, setIsOpen, dropdownRef };
+}
 
-const MenubarShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
-  return <span className={cn("ml-auto text-xs tracking-widest text-muted-foreground", className)} {...props} />;
-};
-MenubarShortcut.displayname = "MenubarShortcut";
+// Enhanced Navigation Menu with Dropdown
+interface EnhancedNavigationMenuProps {
+  className?: string;
+  children: React.ReactNode;
+}
 
+function EnhancedNavigationMenu({ className, children }: EnhancedNavigationMenuProps) {
+  return (
+    <nav
+      className={cn('relative z-10 flex max-w-max flex-1 items-center justify-center', className)}
+    >
+      {children}
+    </nav>
+  );
+}
+
+// Enhanced Navigation Menu Item with Dropdown
+interface EnhancedNavigationMenuItemProps {
+  className?: string;
+  trigger: React.ReactNode;
+  content: React.ReactNode;
+}
+
+function EnhancedNavigationMenuItem({ className, trigger, content }: EnhancedNavigationMenuItemProps) {
+  const { isOpen, setIsOpen, dropdownRef } = useDropdown();
+
+  return (
+    <li className={cn('relative', className)} ref={dropdownRef}>
+      <div onClick={() => setIsOpen(!isOpen)}>
+        {trigger}
+      </div>
+      {isOpen && (
+        <div className="absolute left-0 top-full mt-1.5 w-56 rounded-md border bg-white shadow-lg animate-in fade-in-0 zoom-in-95">
+          {content}
+        </div>
+      )}
+    </li>
+  );
+}
+
+// Example usage component
+export function ExampleNavigation() {
+  return (
+    <EnhancedNavigationMenu>
+      <NavigationMenuList>
+        <EnhancedNavigationMenuItem
+          trigger={
+            <NavigationMenuTrigger>
+              Products
+            </NavigationMenuTrigger>
+          }
+          content={
+            <div className="p-2">
+              <NavigationMenuLink href="/products/laptops">
+                <div className="text-sm font-medium">Laptops</div>
+                <div className="text-xs text-muted-foreground">High-performance laptops</div>
+              </NavigationMenuLink>
+              <NavigationMenuLink href="/products/phones">
+                <div className="text-sm font-medium">Phones</div>
+                <div className="text-xs text-muted-foreground">Smartphones and accessories</div>
+              </NavigationMenuLink>
+              <NavigationMenuLink href="/products/tablets">
+                <div className="text-sm font-medium">Tablets</div>
+                <div className="text-xs text-muted-foreground">Tablets and e-readers</div>
+              </NavigationMenuLink>
+            </div>
+          }
+        />
+
+        <NavigationMenuItem>
+          <NavigationMenuLink href="/solutions">
+            Solutions
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+
+        <EnhancedNavigationMenuItem
+          trigger={
+            <NavigationMenuTrigger>
+              Resources
+            </NavigationMenuTrigger>
+          }
+          content={
+            <div className="p-2">
+              <NavigationMenuLink href="/docs">
+                <div className="text-sm font-medium">Documentation</div>
+                <div className="text-xs text-muted-foreground">API references and guides</div>
+              </NavigationMenuLink>
+              <NavigationMenuLink href="/blog">
+                <div className="text-sm font-medium">Blog</div>
+                <div className="text-xs text-muted-foreground">Latest news and updates</div>
+              </NavigationMenuLink>
+              <NavigationMenuLink href="/support">
+                <div className="text-sm font-medium">Support</div>
+                <div className="text-xs text-muted-foreground">Get help and support</div>
+              </NavigationMenuLink>
+            </div>
+          }
+        />
+
+        <NavigationMenuItem>
+          <NavigationMenuLink href="/pricing">
+            Pricing
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </EnhancedNavigationMenu>
+  );
+}
+
+// Export components
 export {
-  Menubar,
-  MenubarMenu,
-  MenubarTrigger,
-  MenubarContent,
-  MenubarItem,
-  MenubarSeparator,
-  MenubarLabel,
-  MenubarCheckboxItem,
-  MenubarRadioGroup,
-  MenubarRadioItem,
-  MenubarPortal,
-  MenubarSubContent,
-  MenubarSubTrigger,
-  MenubarGroup,
-  MenubarSub,
-  MenubarShortcut,
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuContent,
+  NavigationMenuTrigger,
+  NavigationMenuLink,
+  navigationMenuTriggerStyle,
+};
+
+// Export enhanced components
+export {
+  EnhancedNavigationMenu,
+  EnhancedNavigationMenuItem,
 };
