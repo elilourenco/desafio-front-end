@@ -21,20 +21,3 @@ export function Providers({ children }: { children: React.ReactNode }) {
     </QueryClientProvider>
   );
 }
-```
-
-## 3. **Estrutura de Páginas (App Router)**
-```
-app/
-├── layout.tsx (arquivo acima)
-├── page.tsx (Catalog)
-├── auth/
-│   └── page.tsx
-├── cart/
-│   └── page.tsx
-├── checkout/
-│   └── page.tsx
-├── order/
-│   └── [id]/
-│       └── page.tsx
-└── not-found.tsx
