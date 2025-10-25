@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { CreditCard, QrCode, FileText } from 'lucide-react';
 
 type PaymentMethod = 'pix' | 'credit-card' | 'boleto';

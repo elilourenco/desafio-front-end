@@ -1,17 +1,33 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Loader2, Copy, Check, QrCode } from 'lucide-react';
-import { PaymentMethod } from '@/lib/orders';
+import { PaymentMethod } from '../lib/orders';
+
+type PixPaymentDetails = {
+  pixCode: string;
+  pixQrCode?: string;
+};
+
+type CreditCardPaymentDetails = {
+  cardLastDigits: string;
+};
+
+type BoletoPaymentDetails = {
+  boletoCode: string;
+  boletoUrl?: string;
+};
+
+type PaymentDetails = PixPaymentDetails | CreditCardPaymentDetails | BoletoPaymentDetails;
 
 interface PaymentFormProps {
   method: PaymentMethod;
   total: number;
-  onSubmit: (paymentDetails: any) => void;
+  onSubmit: (paymentDetails: PaymentDetails) => void;
   isProcessing: boolean;
 }
 
