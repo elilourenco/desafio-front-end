@@ -1,48 +1,56 @@
-import { Link, useLocation } from 'react-router-dom';
+'use client';
+
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ShoppingBag, ShoppingCart, LogOut, User } from 'lucide-react';
 import { authService } from '@/lib/auth';
 import { cartService } from '@/lib/cart';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Badge } from '@/components/ui/badge';
 
 const Navbar = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const pathname = usePathname();
+  const router = useRouter();
   const [cartCount, setCartCount] = useState(0);
-  const user = authService.getCurrentUser();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Get current user
+    setUser(authService.getCurrentUser());
+  }, [pathname]);
 
   useEffect(() => {
     // Update cart count
     const updateCartCount = () => {
       setCartCount(cartService.getCount());
     };
-
+    
     updateCartCount();
     
     // Listen for storage changes (cart updates)
-    window.addEventListener('storage', updateCartCount);
+    const handleStorageChange = () => updateCartCount();
+    window.addEventListener('storage', handleStorageChange);
     
     // Custom event for cart updates within same tab
     const handleCartUpdate = () => updateCartCount();
     window.addEventListener('cart-updated', handleCartUpdate);
-
+    
     return () => {
-      window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('cart-updated', handleCartUpdate);
     };
-  }, [location]);
+  }, [pathname]);
 
   const handleLogout = () => {
     authService.logout();
-    navigate('/auth');
+    router.push('/auth');
   };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-bold text-xl">
+        <Link href="/" className="flex items-center gap-2 font-bold text-xl">
           <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary">
             <ShoppingBag className="w-6 h-6 text-primary-foreground" />
           </div>
@@ -52,7 +60,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           {user && (
             <>
-              <Link to="/cart">
+              <Link href="/cart">
                 <Button variant="ghost" size="icon" className="relative">
                   <ShoppingCart className="h-5 w-5" />
                   {cartCount > 0 && (
@@ -65,20 +73,20 @@ const Navbar = () => {
                   )}
                 </Button>
               </Link>
-
+              
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted">
                 <User className="h-4 w-4" />
                 <span className="text-sm font-medium">{user.name}</span>
               </div>
-
+              
               <Button variant="ghost" size="icon" onClick={handleLogout}>
                 <LogOut className="h-5 w-5" />
               </Button>
             </>
           )}
-
-          {!user && location.pathname !== '/auth' && (
-            <Link to="/auth">
+          
+          {!user && pathname !== '/auth' && (
+            <Link href="/auth">
               <Button>Entrar</Button>
             </Link>
           )}
