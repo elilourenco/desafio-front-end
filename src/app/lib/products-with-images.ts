@@ -1,4 +1,3 @@
-// Using Next.js Image optimization for better performance
 
 "use client";
 import productHero from '../../../public/product.jpeg';
