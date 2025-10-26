@@ -138,7 +138,7 @@ export default function Auth() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary mb-4 shadow-lg">
             <ShoppingBag className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold mb-2">Checkout Pro</h1>
+          <h1 className="text-3xl font-bold mb-2">StoreVisa</h1>
           <p className="text-muted-foreground">Entre ou crie sua conta para continuar</p>
         </div>
 

@@ -1,6 +1,6 @@
 
 "use client";
-import productHero from '../../../public/product.jpeg';
+import productHero from '/product.jpg';
 
 export const productImages = {
   hero: productHero,

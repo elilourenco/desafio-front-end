@@ -2,7 +2,7 @@
 
 import { InputHTMLAttributes } from "react";
 import { Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
   checked?: boolean;

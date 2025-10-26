@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, createContext, useContext } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 import { Check, ChevronRight, Circle } from 'lucide-react';
 
 // Types

@@ -31,9 +31,11 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
     <Card className="overflow-hidden transition-all duration-200 hover:shadow-lg">
       <div className="aspect-video bg-muted relative overflow-hidden">
         <Image
+        
           src={product.image}
           alt={product.name}
           fill
+          loading='eager'
           className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />

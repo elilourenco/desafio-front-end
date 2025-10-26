@@ -14,11 +14,18 @@ const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [cartCount, setCartCount] = useState<number>(0);
-  const [user, setUser] = useState<User | null>(() => authService.getCurrentUser() ?? null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
-  // Initialize current user from authService; no synchronous setState in an effect.
+  // Aguardar montagem do componente no cliente
+  useEffect(() => {
+    setIsMounted(true);
+    setUser(authService.getCurrentUser() ?? null);
+  }, []);
 
   useEffect(() => {
+    if (!isMounted) return;
+
     // Update cart count
     const updateCartCount = () => {
       setCartCount(cartService.getCount());
@@ -38,26 +45,47 @@ const Navbar = () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('cart-updated', handleCartUpdate);
     };
-  }, [pathname]);
+  }, [pathname, isMounted]);
 
   const handleLogout = () => {
     authService.logout();
+    setUser(null);
     router.push('/auth');
   };
 
+  // Durante SSR/hydration, renderize um estado neutro
+  if (!isMounted) {
+    return (
+      <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary">
+              <ShoppingBag className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <span>StoreVisa</span>
+          </Link>
+
+          <div className="flex items-center gap-4">
+            {/* Placeholder para o botão de entrar - renderizado igual no servidor e cliente */}
+            <div className="h-9 w-20 bg-muted rounded-md animate-pulse"></div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur
-     supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl">
           <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary">
             <ShoppingBag className="w-6 h-6 text-primary-foreground" />
           </div>
-          <span>Checkout Pro</span>
+          <span>StoreVisa</span>
         </Link>
 
         <div className="flex items-center gap-4">
-          {user && (
+          {user ? (
             <>
               <Link href="/cart">
                 <Button variant="ghost" size="icon" className="relative">
@@ -82,13 +110,11 @@ const Navbar = () => {
                 <LogOut className="h-5 w-5" />
               </Button>
             </>
-          )}
-          
-          {!user && pathname !== '/auth' && (
+          ) : pathname !== '/auth' ? (
             <Link href="/auth">
               <Button>Entrar</Button>
             </Link>
-          )}
+          ) : null}
         </div>
       </div>
     </nav>
