@@ -1,5 +1,7 @@
 // Using Next.js Image optimization for better performance
-import productHero from '@/assets/product-hero.jpg';
+
+"use client";
+import productHero from '../../../public/product.jpeg';
 
 export const productImages = {
   hero: productHero,

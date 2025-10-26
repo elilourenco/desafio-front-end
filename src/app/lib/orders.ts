@@ -1,6 +1,6 @@
 // Order management with mock payment processing
 // Compatible with Next.js App Router and React 19
-
+"use client";
 export type PaymentMethod = 'pix' | 'credit-card' | 'boleto';
 export type OrderStatus = 'pending' | 'processing' | 'paid' | 'failed' | 'expired';
 

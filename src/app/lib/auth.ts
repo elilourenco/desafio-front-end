@@ -1,6 +1,6 @@
 // Mock authentication system with localStorage persistence
 // Compatible with Next.js App Router and React 19
-
+"use client";
 export interface User {
   id: string;
   name: string;

@@ -1,4 +1,5 @@
 // Mock product data with TypeScript and Next.js compatibility
+"use client";
 
 export interface Product {
   id: string;
@@ -23,7 +24,7 @@ export const products: Product[] = [
     description: 'Notebook gamer de alta performance com Intel i7, 16GB RAM, RTX 3060 e SSD 512GB. Ideal para jogos e trabalho pesado.',
     price: 5499.99,
     originalPrice: 5999.99,
-    image: '/images/products/notebook-gamer.jpg',
+    image: '../../../public/product.jpeg',
     category: 'Eletrônicos',
     tags: ['gamer', 'performance', 'ssd'],
     inStock: true,
@@ -50,7 +51,7 @@ export const products: Product[] = [
     description: 'Mouse gamer com iluminação RGB personalizável, DPI ajustável até 16000 e 7 botões programáveis.',
     price: 159.90,
     originalPrice: 199.90,
-    image: '/images/products/mouse-gamer.jpg',
+    image: '../../../public/products.jpeg',
     category: 'Periféricos',
     tags: ['gamer', 'rgb', 'precisão'],
     inStock: true,
@@ -77,7 +78,7 @@ export const products: Product[] = [
     description: 'Teclado mecânico com switches Blue, iluminação RGB completa e layout ABNT2 para maior conforto.',
     price: 349.90,
     originalPrice: 429.90,
-    image: '/images/products/teclado-mecanico.jpg',
+    image: '../../../public/product.jpeg',
     category: 'Periféricos',
     tags: ['mecânico', 'rgb', 'abnt2'],
     inStock: true,
@@ -103,7 +104,7 @@ export const products: Product[] = [
     name: 'Headset Wireless 7.1',
     description: 'Headset gamer wireless com som surround 7.1 virtual, bateria de 20 horas e microfone removível.',
     price: 599.00,
-    image: '/images/products/headset-wireless.jpg',
+    image: '../../../public/product.jpeg',
     category: 'Áudio',
     tags: ['wireless', '7.1', 'gamer'],
     inStock: true,
@@ -130,7 +131,7 @@ export const products: Product[] = [
     description: 'Monitor gamer 27 polegadas com taxa de atualização de 144Hz, painel IPS e tempo de resposta de 1ms.',
     price: 1299.00,
     originalPrice: 1499.00,
-    image: '/images/products/monitor-27.jpg',
+    image: '../../../public/product.jpeg',
     category: 'Monitores',
     tags: ['144hz', 'ips', 'gamer'],
     inStock: false,
@@ -156,7 +157,7 @@ export const products: Product[] = [
     name: 'Webcam Full HD Pro',
     description: 'Webcam Full HD com gravação em 1080p 60fps, microfone integrado com redução de ruído e ajuste automático de luz.',
     price: 389.90,
-    image: '/images/products/webcam-fullhd.jpg',
+    image: '../../../public/product.jpeg',
     category: 'Periféricos',
     tags: ['1080p', 'microfone', 'streaming'],
     inStock: true,
