@@ -1,7 +1,7 @@
 "use client"
 import * as React from "react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   ref?: React.Ref<HTMLDivElement>;
