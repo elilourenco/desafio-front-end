@@ -107,7 +107,7 @@ export default function Cart() {
               <p className="text-muted-foreground mb-6">
                 Adicione produtos ao carrinho para continuar suas compras
               </p>
-              <Link href="/">
+              <Link href="/catalog">
                 <Button className="w-full">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Voltar ao catálogo
