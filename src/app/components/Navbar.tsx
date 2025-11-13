@@ -10,7 +10,6 @@ import { cartService } from '../lib/cart';
 import { useState, useEffect } from 'react';
 
 
-
 const Navbar = () => {
   type User = { id?: string; name: string; email?: string };
   const pathname = usePathname();
