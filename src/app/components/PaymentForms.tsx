@@ -21,6 +21,7 @@ type CreditCardPaymentDetails = {
 type BoletoPaymentDetails = {
   boletoCode: string;
   boletoUrl?: string;
+
 };
 
 type PaymentDetails = PixPaymentDetails | CreditCardPaymentDetails | BoletoPaymentDetails;

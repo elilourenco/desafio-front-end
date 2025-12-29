@@ -12,7 +12,6 @@ export function useAuth() {
     setUser(authService.getCurrentUser());
     setIsLoading(false);
   }, []);
-
   return {
     user,
     isLoading,
